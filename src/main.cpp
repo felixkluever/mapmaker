@@ -1,13 +1,9 @@
 #include <iostream>
 
-#include "../include/demo.h"
 #include "../include/image.h"
+#include "../include/perlin_noise.h"
 
 int main ( int argc, char* argv[]) {
-    std::cout << "Hello world" << std::endl;
-
-    std::cout << calc(3,4) << std::endl;
-
     const int width = 640;
     const int height = 480;
 
@@ -22,4 +18,19 @@ int main ( int argc, char* argv[]) {
     }
 
     image.Export("image.bmp");
+
+    Perlin_Noise noise = Perlin_Noise(width, height);
+    Image perlinnoise = Image(width, height);
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            Color color = Color(noise.get_value(x, y), noise.get_value(x, y), noise.get_value(x, y));
+            perlinnoise.SetColor(color, x, y);
+        }
+        
+    }
+
+    perlinnoise.Export("noise.bmp");
 }
