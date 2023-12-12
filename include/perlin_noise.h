@@ -1,41 +1,19 @@
+// translation of the reference implementation by Ken Perlin
+// with help of https://solarianprogrammer.com/2012/07/18/perlin-noise-cpp-11/
+
 #include <vector>
 
-class Perlin_Noise 
-{
+class Perlin_Noise {
+    std::vector<int> permutation;
 public:
-    // constructurs
-    Perlin_Noise(int width, int height);
-    ~Perlin_Noise();
-
-    // functions
-    const std::vector<float>& get_map();
-    float get_value(int x, int y);
-
-    //datatypes
-
-    struct Vector2 {
-        float x, y;
-
-        Vector2();
-        Vector2(float x, float y);
-        ~Vector2();
-    };
-
-    /*typedef struct vector2
-    {
-        float x, y;
-    };*/
-    
+    //initilize with the reference vector  
+    Perlin_Noise();
+    //generates a new permutation vector based on the value of the seed
+    Perlin_Noise(unsigned int seed);
+    //get value from given coordinates
+    double noise(double x, double y, double z);
 private:
-    //functions
-    void calc();
-    float interpolate(float a0, float a1, float x);
-    Vector2 randomGradient(int ix, int iy);
-    float dotGridGradient(int ix, int iy, float x, float y);
-    float perlin(float x, float y);
-
-    // members
-    int m_width;
-    int m_height;
-    std::vector<float> m_map;
+    double fade (double t);
+    double lerp (double t, double a, double b);
+    double grad (int hash, double x, double y, double z);
 };
