@@ -19,14 +19,15 @@ int main ( int argc, char* argv[]) {
 
     image.Export("image.bmp");
 
-    Perlin_Noise noise = Perlin_Noise(width, height);
+    Perlin_Noise noise = Perlin_Noise(63385686597);
     Image perlinnoise = Image(width, height);
 
     for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
         {
-            Color color = Color(noise.get_value(x, y), noise.get_value(x, y), noise.get_value(x, y));
+            std::cout << noise.noise(x,y);
+            Color color = Color(noise.noise(x, y, 0), noise.noise(x, y, 0), noise.noise(x, y, 0));
             perlinnoise.SetColor(color, x, y);
         }
         

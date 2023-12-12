@@ -1,101 +1,76 @@
 #include "../include/perlin_noise.h"
 
 #include "math.h"
+#include <numeric>
+#include <random>
 
-Perlin_Noise::Vector2::Vector2() {
+//initialize with reference values
+Perlin_Noise::Perlin_Noise() {
+    // Initialize the permutation vector with the reference values
+    //permutation = {151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180};
+    // Duplicate the permutation vector
+	permutation.insert(permutation.end(), permutation.begin(), permutation.end());
 }
 
-Perlin_Noise::Vector2::Vector2(float x, float y) : x(x), y(y) {
+// generates a new permutation vector based on seed
+Perlin_Noise::Perlin_Noise(unsigned int seed) {
+    permutation.resize(256);
+
+    //fill permutation with values from 0-255
+    std::iota(permutation.begin(), permutation.end(), 0);
+
+    //initialize a random engine with seed
+    std::default_random_engine engine(seed);
+
+    //shuffle using a the aboe random engine
+    std::shuffle(permutation.begin(), permutation.end(), engine);
+
+    // duplicate the permutation vector
+    permutation.insert(permutation.end(), permutation.begin(), permutation.end());
 }
 
-Perlin_Noise::Vector2::~Vector2() {
+double Perlin_Noise::noise(double x, double y, double z) {
+    //find the cube that contains the point    
+    int X = (int) floor(x) & 255;
+    int Y = (int) floor(y) & 255;
+    int Z = (int) floor(z) & 255;
+
+    //find relative x, y, z of point in cube
+    x -= floor(x);
+    y -= floor(y);
+    z -= floor(z);
+
+    //compute fade curves for each x, y, z
+    double u = fade(x);
+    double v = fade(y); 
+    double w = fade(z);
+
+    // Hash coordinates of the 8 cube corners
+	int A = permutation[X] + Y;
+	int AA = permutation[A] + Z;
+	int AB = permutation[A + 1] + Z;
+	int B = permutation[X + 1] + Y;
+	int BA = permutation[B] + Z;
+	int BB = permutation[B + 1] + Z;
+
+	// Add blended results from 8 corners of cube
+	double res = lerp(w, lerp(v, lerp(u, grad(permutation[AA], x, y, z), grad(permutation[BA], x-1, y, z)), lerp(u, grad(permutation[AB], x, y-1, z), grad(permutation[BB], x-1, y-1, z))),	lerp(v, lerp(u, grad(permutation[AA+1], x, y, z-1), grad(permutation[BA+1], x-1, y, z-1)), lerp(u, grad(permutation[AB+1], x, y-1, z-1), grad(permutation[BB+1], x-1, y-1, z-1))));
+	return (res + 1.0)/2.0;
 }
 
-Perlin_Noise::Perlin_Noise(int width, int height) : m_height(height), m_width(width), m_map(std::vector<float>(width * height)) {
-    calc();
+double Perlin_Noise::fade(double t) {
+    return t*t*t*(t*(t*6-15)+10);
 }
 
-Perlin_Noise::~Perlin_Noise(){
+double Perlin_Noise::lerp(double t, double a, double b) {
+    return a + t * (b-a);
 }
 
-const std::vector<float>& Perlin_Noise::get_map() {
-    return m_map;
-}
+double Perlin_Noise::grad(int hash, double x, double y, double z) {
+    int h = hash & 15;
 
-float Perlin_Noise::get_value(int x, int y) {
-    return m_map[y*m_width + x];
-}
-
-void Perlin_Noise::calc() {
-    for (int x = 0; x < m_width; x++)
-    {
-        for (size_t y = 0; y < m_height; y++)
-        {            
-            m_map[y*m_width+x] = (perlin((float)x, (float) y));   
-        }
-        
-    }
-    
-}
-
-// ------------------------
-//    noise calculations
-// ------------------------
-
-//calculates the noise level for a given point
-float Perlin_Noise::perlin(float x, float y) {
-    //finds the corners of this cell
-    int x0 = (int) floor(x);
-    int x1 = x0 + 1;
-    int y0 = (int) floor(y);
-    int y1 = y0 + 1;
-
-    //interpolation weights
-    float sx = x - (float)x0;
-    float sy = y - (float)y0;
-
-    //interpolates between the gradiants of the 4 corners
-    float n0, n1, ix0, ix1, value;
-    n0 = dotGridGradient(x0, y0, x ,y); //top left
-    n1 = dotGridGradient(x1, y0, x, y); //top right
-    ix0 = interpolate(n0, n1, sx);
-    n0 = dotGridGradient(x0, y1, x, y); //bottom left
-    n1 = dotGridGradient(x1, y1, x, y); //bottom right
-    ix1 = interpolate(n0, n1, sx);
-    return interpolate (n0, n1, sx); //noise level of the cell
-}
-
-// scalar product between the gradient vector and distance vector
-float Perlin_Noise::dotGridGradient(int ix, int iy, float x, float y) {
-    //random gradient 
-    Vector2 gradient = randomGradient(ix, iy);
-
-    //distance vector
-    float dx = x - (float) ix;
-    float dy = y - (float) iy;
-
-    return dx * gradient.x + dy * gradient.y; // scalar product
-}
-
-// creates a random direction vector
-Perlin_Noise::Vector2 Perlin_Noise::randomGradient(int ix, int iy) {
-    // custom random function?
-    // TODO test with stock random function
-    const unsigned w = 8 * sizeof(unsigned);
-    const unsigned s = w / 2;
-    unsigned a = ix, b = iy;
-    a *= 3284157443; 
-    b ^= a << s | a >> (w - s);
-    b *= 1911520717;
-    a ^= b << s | b >> (w - s);
-    a *= 2048419325;
-    float random = a * (3.14159265 / ~(~0u >> 1)); //random number between 0 and 2*PI
-    return Perlin_Noise::Vector2(sin(random), cos(random));    
-}
-
-//interpolates linearly between a0 and a1
-float Perlin_Noise::interpolate(float a0, float a1, float x) {
-    if (x < 0.0) return a0;
-    if (x > 1.0) return a1;
-    return (a1-a0) * x + a0;
+    //convert lower 4 bits of hash into 12 gradient directions
+    double u = h < 8 ? x : y;
+    double v = h < 4 ? y : h == 12 || h == 14 ? x : z;
+    return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 }
