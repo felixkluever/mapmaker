@@ -12,6 +12,7 @@ Map::Map(int width, int height, int seed) : height(height), width(width), seed(s
 void Map::generateMap() {
     //the foundation terrain noise
     Perlin_Noise terrain_noise = Perlin_Noise(seed);
+    Perlin_Noise terrain_noise2 = Perlin_Noise(seed * seed / 84576);
 
     for (int i = 0; i < width; i++)
     {
@@ -26,19 +27,27 @@ void Map::generateMap() {
             // factor in front of X / Y controls amplitudes
             // "normal" values are 10*x, 10*y
 
-            double val = terrain_noise.noise(10*x, y, 0.8);            
+            double terrain = terrain_noise.noise(10*x, 10*y, 0.8) + terrain_noise2.noise(10*x, 10*y, 0.8) / 10;            
+            double val = terrain; // add other noises as required;
+
+            //std::cout << val << " ";
 
             map[j * width + i] = colorPixel(val);
             // map [j * width + i] = Color(val, val, val);
         }   
+        //std::cout << std::endl;
     }
 }
 
 Color Map::colorPixel(double val) {
     if (val < 0.5)
         return sea_colour;
-    else if (val < 0.8)
+    else if (val < 0.7)
         return grass_colour;
+    else if (val < 0.8)
+        return dirt_colour;
+    else if (val < 0.9)
+        return stone_colour;
     else
         return snow_colour;
     

@@ -25,7 +25,10 @@ private:
     //colours
     const Color sea_colour = Color(0.0f, 0.0f, 1.0f);
     const Color snow_colour = Color(1.0f, 1.0f, 1.0f);
-    const Color grass_colour = Color(0.0f, 1.0f, 0.0f);
+    const Color grass_colour = Color(0.0f, 0.8f, 0.0f);
+    const Color stone_colour = Color(0.5f, 0.5f, 0.5f);
+    const Color dirt_colour = Color(0.5f, 0.25f, 0.0f);
+
 };
 
 #endif
