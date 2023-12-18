@@ -2,6 +2,8 @@
 
 #include "../include/perlin_noise.h"
 
+#include <iostream>
+
 Map::Map(int width, int height, int seed) : height(height), width(width), seed(seed) {
     map = std::vector<Color>(width * height);
     generateMap();
@@ -24,16 +26,16 @@ void Map::generateMap() {
             // factor in front of X / Y controls amplitudes
             // "normal" values are 10*x, 10*y
 
-            double val = terrain_noise.noise(10*x, y, 0.8);
+            double val = terrain_noise.noise(10*x, y, 0.8);            
 
-            //map[j * width + i] = colorPixel(val);
-            map [j * width + i] = Color(val, val, val);
+            map[j * width + i] = colorPixel(val);
+            // map [j * width + i] = Color(val, val, val);
         }   
     }
 }
 
 Color Map::colorPixel(double val) {
-    if (val < 0)
+    if (val < 0.5)
         return sea_colour;
     else if (val < 0.8)
         return grass_colour;
