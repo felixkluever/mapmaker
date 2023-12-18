@@ -10,6 +10,8 @@ cd ..
 
 if [ $# -ne 0 ] && [ $1 == 'run' ]
 then
+    echo "generating map..."
+
     ./build/bin/mapmaker
-    code noise.bmp
+    # code noise.bmp
 fi

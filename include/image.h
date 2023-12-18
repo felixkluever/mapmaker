@@ -1,3 +1,5 @@
+#ifndef _image_
+#define _image_
 #include <vector>
 
 //color struct
@@ -28,3 +30,4 @@ private:
     int m_height;
     std::vector<Color> m_colors;
 };
+#endif
