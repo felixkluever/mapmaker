@@ -15,8 +15,10 @@ private:
     std::vector<Color> map;
 
     //functions
-    Color colorPixel(double val);
-    void generateMap();
+    Color colorTerrain(double val);
+    void generateMap(); //main function for map generation, includes terrain generation
+    void drawCities(); //finds spots for cities
+    void drawCity(int const x, int const y); //draws the actual city
 
     //terrain
     double sea_level;
@@ -25,9 +27,11 @@ private:
     //colours
     const Color sea_colour = Color(0.0f, 0.0f, 1.0f);
     const Color snow_colour = Color(1.0f, 1.0f, 1.0f);
-    const Color grass_colour = Color(0.0f, 0.8f, 0.0f);
+    const Color grass_colour = Color(0.0f, 0.7f, 0.0f);
     const Color stone_colour = Color(0.5f, 0.5f, 0.5f);
     const Color dirt_colour = Color(0.5f, 0.25f, 0.0f);
+    const Color sand_colour = Color(0.8f, 0.8f, 0.0f);
+    const Color city_colour = Color(1.0f, 0.0f, 0.0f);
 
 };
 

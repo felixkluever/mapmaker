@@ -12,6 +12,10 @@ struct Color {
     ~Color();
 };
 
+static bool sameColor(Color a, Color b) {
+    return a.r == b.r && a.g == b.g && a.b == b.b;
+}
+
 //image class
 //represents the whole image
 class Image

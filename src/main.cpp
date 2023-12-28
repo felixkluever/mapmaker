@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 
 #include "../include/image.h"
 #include "../include/perlin_noise.h"
@@ -8,8 +9,12 @@ int main ( int argc, char* argv[]) {
     const int width = 1920;
     const int height = 1080;
     
+    int seed = 1;
+    //creates a random seed
+    srand((unsigned) time(NULL));
+    seed = rand();
     Image perlinnoise = Image(width, height);
-    Map map = Map(width, height, 84765);
+    Map map = Map(width, height, seed);
 
     for (int y = 0; y < height; y++)
     {
@@ -19,5 +24,5 @@ int main ( int argc, char* argv[]) {
         }
     }
 
-    perlinnoise.Export("noise.bmp");
-}
+    perlinnoise.Export("map.bmp");
+} 
