@@ -79,13 +79,11 @@ void Map::drawCities() {
             double y = (double)j / ((double) height);
 
             double cities = cities_noise.noise(100 * x, 100 * y, 0.8);            
-
-            // TODO causes seg fault at i = 1487, j = 826 EVERY TIME
-            /*if (cities > 0.9f && sameColor(map[i * width + j], grass_colour)) {                     
-                
+            
+            if (cities > 0.9f && sameColor(map[j * width + i], grass_colour)) {
                 map[j * width + i] = Color (1, 0 ,0);
                 cities_ctr ++;
-            }*/
+            }
         }
     }
     std::cout << "cities generated: " << cities_ctr << std::endl;
