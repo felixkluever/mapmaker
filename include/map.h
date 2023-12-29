@@ -4,6 +4,8 @@
 #include "image.h"
 #include <vector>
 
+#include "../include/perlin_noise.h"
+
 class Map {
 public:
     Map(int width, int height, int seed);
@@ -18,7 +20,7 @@ private:
     Color colorTerrain(double val);
     void generateMap(); //main function for map generation, includes terrain generation
     void drawCities(); //finds spots for cities
-    void drawCity(int const x, int const y); //draws the actual city
+    void drawCity(int const x, int const y, Perlin_Noise city_noise); //draws the actual city
 
     //terrain
     double sea_level;

@@ -1,7 +1,5 @@
 #include "../include/map.h"
 
-#include "../include/perlin_noise.h"
-
 #include <iostream>
 
 Map::Map(int width, int height, int seed) : height(height), width(width), seed(seed) {
@@ -81,7 +79,8 @@ void Map::drawCities() {
             double cities = cities_noise.noise(100 * x, 100 * y, 0.8);            
             
             if (cities > 0.9f && sameColor(map[j * width + i], grass_colour)) {
-                map[j * width + i] = Color (1, 0 ,0);
+                //map[j * width + i] = Color (1, 0 ,0);
+                drawCity(i, j, cities_noise);
                 cities_ctr ++;
             }
         }
@@ -89,6 +88,17 @@ void Map::drawCities() {
     std::cout << "cities generated: " << cities_ctr << std::endl;
 }
 
-void Map::drawCity(int const x, int const y) {
-    
+//draws a city based on the city noise, which was also used to find it
+void Map::drawCity(int const x, int const y, Perlin_Noise city_noise) {
+    for (int X = x-50; X < x+50; X++)
+    {
+        for (int Y = y-50; Y < y+50; Y++)
+        {            
+            if (
+                city_noise.noise(100 * (double)X / ((double) width), 100 * (double)Y / ((double) height), 0.8) > 0.75f 
+                && sameColor(map[Y * width + X], grass_colour)
+            )
+                map[Y * width + X] = city_colour;
+        }
+    }
 }
