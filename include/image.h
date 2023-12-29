@@ -34,4 +34,5 @@ private:
     int m_height;
     std::vector<Color> m_colors;
 };
+
 #endif

@@ -1,3 +1,6 @@
+#ifndef _noise_
+#define _noise_
+
 // translation of the reference implementation by Ken Perlin
 // with help of https://solarianprogrammer.com/2012/07/18/perlin-noise-cpp-11/
 
@@ -17,3 +20,5 @@ private:
     double lerp (double t, double a, double b);
     double grad (int hash, double x, double y, double z);
 };
+
+#endif
