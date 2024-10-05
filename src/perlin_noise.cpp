@@ -3,6 +3,7 @@
 #include "math.h"
 #include <numeric>
 #include <random>
+#include <algorithm>
 
 //initialize with reference values
 Perlin_Noise::Perlin_Noise() {
